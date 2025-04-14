@@ -10,7 +10,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy":"git add . && git commit -m 'Deploying!' && git push"
+    "github-up":"git add . && git commit -m 'Deploying!' && git push"
   },
   "dependencies": {
     "cors": "^2.8.5",
