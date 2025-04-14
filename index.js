@@ -122,9 +122,8 @@ app.put("/api/notes/:id", (request, response) => {
   let nota = notes.find((n) => n.id === id);
   if (nota && body) {
     nota = { ...nota, ...body };
-    notes = notes.filter((n) => n.id !== id);
-    notes = [...notes, nota];
-    //console.log(nota);
+    notes = notes.map((n) => (n.id === id ? nota : n));
+    console.log(nota);
     return response.json(nota);
   }
 
