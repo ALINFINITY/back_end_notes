@@ -23,7 +23,7 @@ let notes = [
 ];
 
 const obj = {
-  name: "Alan",
+  name: "Logan",
   status: "Aprendiendo Express",
 };
 
@@ -33,7 +33,7 @@ app.use(express.json());
 //Cors - Middleware
 app.use(cors());
 
-//Middleware:
+//Middleware Personalizado:
 const Midl_ShowProperties = (request, response, next) => {
   console.log("Method: ", request.method);
   console.log("Path: ", request.path);
@@ -42,11 +42,13 @@ const Midl_ShowProperties = (request, response, next) => {
   next();
 };
 
+//Middleware para servir archivos estáticos
+app.use(express.static("./dist"));
+
 //Utilización del middleware
 app.use(Midl_ShowProperties);
 
 //Controladores de ruta:
-
 app.get("/", (request, response) => {
   response.send("<h2>Deployed!! 🔥</h2>");
 });
@@ -68,21 +70,21 @@ app.get("/api/notes/:id", (request, response) => {
   }
 });
 
-//Endpoint para obtener un objeto
+//Endpoint para obtener un objeto status
 app.get("/api/status", (request, response) => {
   response.json(obj);
 });
 
-//Endpoint para eliminar un objeto
+//Endpoint para eliminar una nota
 app.delete("/api/notes/:id", (request, response) => {
   const id = parseInt(request.params.id);
   notes = notes.filter((note) => note.id !== id);
-  console.log(notes);
+  //console.log(notes);
 
   response.status(204).end();
 });
 
-//Endpoint para registrar un objeto
+//Endpoint para registrar una nota
 
 const generateID = () => {
   const maxid = notes.length > 0 ? Math.max(...notes.map((not) => not.id)) : 0;
@@ -107,10 +109,28 @@ app.post("/api/notes", (request, response) => {
 
   notes = [...notes, newNote];
 
-  console.log(notes);
+  //console.log(notes);
   //console.log(request.get("content-type"));
 
   response.json(newNote);
+});
+
+//Endpoint para actualizar una nota
+app.put("/api/notes/:id", (request, response) => {
+  const id = parseInt(request.params.id);
+  const body = request.body;
+  let nota = notes.find((n) => n.id === id);
+  if (nota && body) {
+    nota = { ...nota, ...body };
+    notes = notes.filter((n) => n.id !== id);
+    notes = [...notes, nota];
+    //console.log(nota);
+    return response.json(nota);
+  }
+
+  response.status(404).json({
+    error: "Note not found!",
+  });
 });
 
 //Middleware: Si ningun controlador de ruta maneja una solicitud, lo hará el siguiente middleware
